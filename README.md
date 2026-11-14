@@ -7,6 +7,10 @@ highest-weight chapters as "Do or Die", and lays everything out as a timeline.
 
 Everything runs in the browser. There is no backend, no account and no network call after the page loads.
 
+**Try it live: https://saifcs50-cs50.github.io/syllabus-slicer/**
+
+![Syllabus Slicer with a 90-day JEE Main plan](screenshot.png)
+
 ## What it does
 
 - **Three exam modes:** JEE Main (Physics, Chemistry, Maths), KCET (same three subjects) and an
@@ -58,6 +62,8 @@ npm run build     # type-check and build to dist/
 npm run preview   # serve the built files locally
 npm run lint      # oxlint
 ```
+
+The live demo is the same build with GitHub Pages' sub-path: `npx vite build --base=/syllabus-slicer/`.
 
 There is no automated test suite yet.
 
