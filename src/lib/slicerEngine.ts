@@ -115,7 +115,7 @@ export function sliceSyllabus(input: {
 
 // Interleaves chapters round-robin across subjects (highest-weight first within
 // each subject) so a study week isn't dominated by a single subject, then bin-packs
-// them into week-capacity buckets — splitting a chapter across weeks if it overflows.
+// them into week-capacity buckets, splitting a chapter across weeks if it overflows.
 function buildWeeklyTimeline(
   chapters: AllocatedChapter[],
   totalDays: number,

@@ -1,5 +1,4 @@
-import { motion } from "framer-motion";
-import { ListChecks, Zap } from "lucide-react";
+import { ListChecks } from "lucide-react";
 import { SUBJECT_META, SUBJECTS_BY_EXAM, type ExamType, type SubjectId } from "../data/syllabus";
 
 interface Props {
@@ -37,10 +36,10 @@ export default function SlicerForm({
   const canSlice = totalDays > 0 && hoursPerDay > 0 && subjects.length > 0;
 
   return (
-    <div className="glass glow-border rounded-2xl p-6 space-y-6">
+    <div className="panel space-y-6 rounded-2xl p-6">
       <div>
-        <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-gray-400">
-          Total Days Until Exam
+        <label className="mb-2 block text-sm font-medium text-gray-300">
+          Days until exam
         </label>
         <input
           type="number"
@@ -48,15 +47,15 @@ export default function SlicerForm({
           max={730}
           value={totalDays}
           onChange={(e) => setTotalDays(Math.max(1, Number(e.target.value) || 0))}
-          className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-lg font-semibold text-white outline-none transition-colors focus:border-[var(--color-jee)] focus:ring-2 focus:ring-[var(--color-jee)]/40"
+          className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-lg font-semibold text-white outline-none transition-colors focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/40"
           placeholder="e.g. 90"
         />
       </div>
 
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <label className="block text-xs font-semibold uppercase tracking-widest text-gray-400">
-            Available Study Hours / Day
+          <label className="block text-sm font-medium text-gray-300">
+            Study hours per day
           </label>
           <span className="rounded-md bg-white/10 px-2 py-0.5 text-sm font-bold text-white">
             {hoursPerDay}h
@@ -78,30 +77,28 @@ export default function SlicerForm({
       </div>
 
       <div>
-        <label className="mb-2 block text-xs font-semibold uppercase tracking-widest text-gray-400">
-          Select Subjects to Slice
+        <label className="mb-2 block text-sm font-medium text-gray-300">
+          Subjects
         </label>
-        <div className="grid grid-cols-3 gap-2" style={{ perspective: 500 }}>
+        <div className="grid grid-cols-3 gap-2">
           {availableSubjects.map((s) => {
             const meta = SUBJECT_META[s];
             const active = subjects.includes(s);
             return (
-              <motion.button
+              <button
                 key={s}
                 type="button"
                 onClick={() => toggleSubject(s)}
-                whileHover={{ y: -3 }}
-                whileTap={{ scale: 0.93, rotateX: 14 }}
-                className="flex flex-col items-center gap-1.5 rounded-xl border px-3 py-3 transition-colors cursor-pointer"
+                aria-pressed={active}
+                className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border px-3 py-3 transition-colors"
                 style={{
                   borderColor: active ? meta.color : "rgba(255,255,255,0.1)",
-                  background: active ? `${meta.color}1a` : "rgba(255,255,255,0.02)",
-                  boxShadow: active ? `0 0 16px ${meta.color}55` : "none",
+                  background: active
+                    ? `color-mix(in srgb, ${meta.color} 10%, transparent)`
+                    : "rgba(255,255,255,0.02)",
                 }}
               >
-                <motion.span
-                  animate={{ rotateY: active ? 360 : 0 }}
-                  transition={{ duration: 0.5 }}
+                <span
                   className="flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold"
                   style={{
                     background: active ? meta.color : "rgba(255,255,255,0.08)",
@@ -109,9 +106,9 @@ export default function SlicerForm({
                   }}
                 >
                   {meta.short}
-                </motion.span>
+                </span>
                 <span className="text-xs font-medium text-gray-300">{meta.name}</span>
-              </motion.button>
+              </button>
             );
           })}
         </div>
@@ -124,24 +121,21 @@ export default function SlicerForm({
       >
         <span className="flex items-center gap-2">
           <ListChecks className="h-4 w-4 text-gray-400" />
-          Configure Chapters
+          Configure chapters
         </span>
         <span className="text-xs text-gray-500">
           {includedChapterCount}/{totalChapterCount} included
         </span>
       </button>
 
-      <motion.button
-        whileHover={canSlice ? { scale: 1.02, y: -2 } : {}}
-        whileTap={canSlice ? { scale: 0.96, rotateX: 12 } : {}}
-        style={{ perspective: 500 }}
+      <button
+        type="button"
         disabled={!canSlice}
         onClick={onSlice}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--color-jee)] via-[var(--color-cet)] to-[var(--color-ncert)] px-6 py-4 text-base font-bold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-40"
+        className="w-full cursor-pointer rounded-xl bg-[var(--accent)] px-6 py-4 text-base font-bold text-[var(--accent-ink)] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        <Zap className="h-5 w-5" fill="currentColor" />
-        Slice My Syllabus
-      </motion.button>
+        Slice my syllabus
+      </button>
     </div>
   );
 }

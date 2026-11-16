@@ -1,4 +1,4 @@
-// Syllabus Slicer — Data Dictionary
+// Syllabus Slicer data
 // Chapter weight numbers are relative-within-subject scores (roughly 0-10) used
 // by the slicer engine to allocate study hours. Tiers/labels are derived from
 // weight, not hand-typed, so the display text always matches the number driving
@@ -6,18 +6,19 @@
 
 export type ExamType = "JEE" | "CET" | "NCERT";
 
+// `ink` is the text colour that stays readable on top of `color`.
 export const EXAM_META: Record<
   ExamType,
-  { label: string; full: string; color: string; glow: string }
+  { label: string; full: string; color: string; ink: string }
 > = {
-  JEE: { label: "JEE Main", full: "JEE Main", color: "var(--color-jee)", glow: "var(--color-jee-glow)" },
-  CET: { label: "KCET", full: "Karnataka CET", color: "var(--color-cet)", glow: "var(--color-cet-glow)" },
-  NCERT: { label: "NCERT", full: "NCERT / Board Level", color: "var(--color-ncert)", glow: "var(--color-ncert-glow)" },
+  JEE: { label: "JEE Main", full: "JEE Main", color: "var(--color-jee)", ink: "#ffffff" },
+  CET: { label: "KCET", full: "Karnataka CET", color: "var(--color-cet)", ink: "#05050a" },
+  NCERT: { label: "NCERT", full: "NCERT / Board Level", color: "var(--color-ncert)", ink: "#05050a" },
 };
 
 export type SubjectId = "physics" | "chemistry" | "math" | "cs" | "english" | "hindi";
 
-// English, CS, and Hindi are board-level subjects only — JEE Main and KCET
+// English, CS, and Hindi are board-level subjects only: JEE Main and KCET
 // don't examine them at all, so they only ever apply under NCERT / board mode.
 export const SUBJECTS_BY_EXAM: Record<ExamType, SubjectId[]> = {
   JEE: ["physics", "chemistry", "math"],
@@ -38,7 +39,7 @@ export const SUBJECT_META: Record<SubjectId, { name: string; short: string; colo
 // JEE uses a custom 35% Math / 22.5% Physics / 22.5% Chemistry split. It is a
 // planning bias towards Maths, not the official marks split (roughly equal in the real paper).
 // CET treats each subject's paper independently (near-equal split).
-// NCERT/board mode covers all six subjects — P/C/M stay equal to each other
+// NCERT/board mode covers all six subjects. P/C/M stay equal to each other
 // (so a P/C/M-only board plan behaves exactly as before), while CS/English/Hindi
 // get a smaller share reflecting less raw content volume than the science majors.
 export const PAPER_WEIGHTAGE: Record<SubjectId, Record<ExamType, number>> = {
@@ -86,7 +87,7 @@ export interface Chapter {
   subject: SubjectId;
   highYield: boolean;
   weightage: Record<ExamType, WeightageProfile>;
-  // Whether this chapter is part of a given exam's syllabus at all — distinct
+  // Whether this chapter is part of a given exam's syllabus at all, distinct
   // from weightage, which only applies once a chapter is included.
   included: Record<ExamType, boolean>;
 }
@@ -189,7 +190,7 @@ const MATH_RAW: RawChapter[] = [
   { name: "Mathematical Reasoning", cls: "11", jee: 1.5, cet: 2.5, ncert: 2.5, excludeFrom: ["JEE"] },
 ];
 
-// Board-only subjects — not tested by JEE Main or KCET at all, so every
+// Board-only subjects, not tested by JEE Main or KCET at all, so every
 // chapter here is excluded from both.
 const BOARD_ONLY: ExamType[] = ["JEE", "CET"];
 

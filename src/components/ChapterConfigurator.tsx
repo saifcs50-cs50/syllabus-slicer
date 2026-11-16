@@ -42,15 +42,15 @@ export default function ChapterConfigurator({ exam, overrides, onChange, onClose
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="glass-strong glow-border flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl"
+        className="panel-strong flex max-h-[85vh] w-full max-w-2xl flex-col rounded-2xl"
       >
         <div className="flex items-start justify-between border-b border-white/10 p-5">
           <div>
-            <h2 className="text-lg font-bold text-white">Configure Chapters</h2>
+            <h2 className="text-lg font-bold text-white">Configure chapters</h2>
             <p className="mt-0.5 text-xs text-gray-400">
               Choose which chapters count toward{" "}
               <span className="font-semibold" style={{ color: meta.color }}>
@@ -61,6 +61,7 @@ export default function ChapterConfigurator({ exam, overrides, onChange, onClose
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close"
             className="cursor-pointer rounded-lg border border-white/10 p-1.5 text-gray-300 transition-colors hover:bg-white/5"
           >
             <X className="h-4 w-4" />
@@ -79,7 +80,7 @@ export default function ChapterConfigurator({ exam, overrides, onChange, onClose
               <div key={subject}>
                 <div className="mb-2 flex items-center justify-between">
                   <span
-                    className="text-xs font-bold uppercase tracking-widest"
+                    className="text-sm font-semibold"
                     style={{ color: subMeta.color }}
                   >
                     {subMeta.name} · {includedCount}/{subjectChapters.length}
@@ -101,8 +102,12 @@ export default function ChapterConfigurator({ exam, overrides, onChange, onClose
                         key={c.id}
                         className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm transition-colors"
                         style={{
-                          borderColor: isIn ? `${subMeta.color}33` : "rgba(255,255,255,0.06)",
-                          background: isIn ? `${subMeta.color}0d` : "rgba(255,255,255,0.02)",
+                          borderColor: isIn
+                            ? `color-mix(in srgb, ${subMeta.color} 20%, transparent)`
+                            : "rgba(255,255,255,0.06)",
+                          background: isIn
+                            ? `color-mix(in srgb, ${subMeta.color} 5%, transparent)`
+                            : "rgba(255,255,255,0.02)",
                           opacity: isIn ? 1 : 0.55,
                         }}
                       >
@@ -136,7 +141,8 @@ export default function ChapterConfigurator({ exam, overrides, onChange, onClose
           <button
             type="button"
             onClick={onClose}
-            className="cursor-pointer rounded-xl bg-gradient-to-r from-[var(--color-jee)] via-[var(--color-cet)] to-[var(--color-ncert)] px-8 py-2.5 text-sm font-bold text-white"
+            className="cursor-pointer rounded-xl px-8 py-2.5 text-sm font-bold transition-opacity hover:opacity-90"
+            style={{ background: meta.color, color: meta.ink }}
           >
             Done
           </button>

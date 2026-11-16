@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import type { ReactNode } from "react";
-import { Flame, Clock, BookOpen, CalendarDays } from "lucide-react";
+import { Flame } from "lucide-react";
 import { EXAM_META, SUBJECT_META } from "../data/syllabus";
 import type { SlicerResult } from "../lib/slicerEngine";
-import TiltCard from "./TiltCard";
+
+// A faint wash of a CSS colour variable (hex alpha can't be appended to var()).
+const tint = (color: string, pct: number) => `color-mix(in srgb, ${color} ${pct}%, transparent)`;
 
 interface Props {
   result: SlicerResult;
@@ -14,26 +15,21 @@ export default function OutputDashboard({ result }: Props) {
 
   return (
     <div className="relative space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="grid grid-cols-2 gap-4 sm:grid-cols-4"
-      >
-        <StatCard icon={<Clock className="h-4 w-4" />} label="Total Hours" value={`${result.totalHours}h`} color={meta.color} />
-        <StatCard icon={<BookOpen className="h-4 w-4" />} label="Chapters" value={String(result.chapters.length)} color={meta.color} />
-        <StatCard icon={<Flame className="h-4 w-4" />} label="Do or Die" value={String(result.doOrDie.length)} color="var(--color-doordie)" />
-        <StatCard icon={<CalendarDays className="h-4 w-4" />} label="Days Left" value={String(result.totalDays)} color={meta.color} />
-      </motion.div>
+      <p className="text-base text-gray-400">
+        <span className="font-semibold text-white">{result.totalHours}h</span> over{" "}
+        <span className="font-semibold text-white">{result.totalDays} days</span> ·{" "}
+        <span className="font-semibold text-white">{result.chapters.length}</span> chapters ·{" "}
+        <span className="font-semibold text-[var(--color-doordie-glow)]">{result.doOrDie.length}</span> do-or-die
+      </p>
 
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.05 }}
-        className="glass glow-border rounded-2xl p-5"
+        className="panel rounded-2xl p-5"
       >
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-widest text-gray-400">
-          Hours by Subject — {meta.full}
+        <h3 className="mb-4 text-sm font-semibold text-gray-300">
+          Hours by subject · {meta.full}
         </h3>
         <div className="space-y-4">
           {result.subjects.map((s) => {
@@ -52,7 +48,7 @@ export default function OutputDashboard({ result }: Props) {
                     animate={{ width: `${pct}%` }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                     className="h-full rounded-full"
-                    style={{ background: subMeta.color, boxShadow: `0 0 8px ${subMeta.color}` }}
+                    style={{ background: subMeta.color }}
                   />
                 </div>
               </div>
@@ -62,25 +58,19 @@ export default function OutputDashboard({ result }: Props) {
       </motion.div>
 
       <div>
-        <h3 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[var(--color-doordie)]">
-          <Flame className="h-4 w-4" /> Do-or-Die Chapters
+        <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-[var(--color-doordie-glow)]">
+          <Flame className="h-4 w-4" /> Do-or-die chapters
         </h3>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {result.doOrDie.map((c, i) => (
-            <TiltCard
+            <motion.div
               key={c.id}
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.04 }}
-              whileHover={{ scale: 1.03 }}
-              maxTilt={10}
-              className="glass relative overflow-hidden rounded-xl p-4"
-              style={{
-                border: "1px solid rgba(244,63,94,0.4)",
-                boxShadow: "0 0 20px rgba(244,63,94,0.2)",
-              }}
+              className="rounded-xl bg-[var(--color-surface)] p-4"
+              style={{ border: "1px solid rgba(244,63,94,0.4)" }}
             >
-              <div className="absolute -right-6 -top-6 h-16 w-16 rounded-full bg-[var(--color-doordie)]/20 blur-xl" />
               <div className="mb-1.5 flex items-center justify-between">
                 <span
                   className="text-[10px] font-bold uppercase tracking-wider"
@@ -94,7 +84,7 @@ export default function OutputDashboard({ result }: Props) {
               </div>
               <p className="text-sm font-semibold text-white">{c.name}</p>
               <p className="mt-1 text-xs text-gray-400">{c.hours}h allocated</p>
-            </TiltCard>
+            </motion.div>
           ))}
           {result.doOrDie.length === 0 && (
             <p className="text-sm text-gray-500">No standout high-weightage chapters in this selection.</p>
@@ -103,10 +93,10 @@ export default function OutputDashboard({ result }: Props) {
       </div>
 
       <div>
-        <h3 className="mb-3 text-sm font-bold uppercase tracking-widest text-gray-300">
-          Week-by-Week Timeline
+        <h3 className="mb-3 text-sm font-semibold text-gray-300">
+          Week-by-week timeline
         </h3>
-        <div className="glass glow-border max-h-[560px] space-y-4 overflow-y-auto rounded-2xl p-4 pr-3">
+        <div className="panel max-h-[560px] space-y-4 overflow-y-auto rounded-2xl p-4 pr-3">
           {result.weeks.map((week, i) => (
             <motion.div
               key={week.week}
@@ -127,8 +117,8 @@ export default function OutputDashboard({ result }: Props) {
                     key={item.chapter.id}
                     className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs"
                     style={{
-                      background: `${SUBJECT_META[item.chapter.subject].color}1a`,
-                      border: `1px solid ${SUBJECT_META[item.chapter.subject].color}44`,
+                      background: tint(SUBJECT_META[item.chapter.subject].color, 10),
+                      border: `1px solid ${tint(SUBJECT_META[item.chapter.subject].color, 27)}`,
                     }}
                   >
                     {item.chapter.isDoOrDie && (
@@ -147,30 +137,5 @@ export default function OutputDashboard({ result }: Props) {
         </div>
       </div>
     </div>
-  );
-}
-
-function StatCard({
-  icon,
-  label,
-  value,
-  color,
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-  color: string;
-}) {
-  return (
-    <TiltCard maxTilt={12} className="glass glow-border rounded-xl p-4">
-      <div
-        className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg"
-        style={{ background: `${color}22`, color }}
-      >
-        {icon}
-      </div>
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
-    </TiltCard>
   );
 }

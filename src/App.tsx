@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { ScanLine } from "lucide-react";
+import { useEffect, useState, type CSSProperties } from "react";
+import { MotionConfig, motion } from "framer-motion";
 import ExamSelector from "./components/ExamSelector";
 import SlicerForm from "./components/SlicerForm";
 import OutputDashboard from "./components/OutputDashboard";
 import ChapterConfigurator from "./components/ChapterConfigurator";
-import FloatingOrb from "./components/FloatingOrb";
-import AmbientShapes from "./components/AmbientShapes";
-import TiltCard from "./components/TiltCard";
 import { ALL_CHAPTERS, EXAM_META, SUBJECTS_BY_EXAM, type ExamType, type SubjectId } from "./data/syllabus";
 import { sliceSyllabus, type SlicerResult } from "./lib/slicerEngine";
 import { isChapterIncluded, loadOverrides, saveOverrides, type OverrideMap } from "./lib/chapterConfig";
@@ -50,124 +46,65 @@ export default function App() {
     );
   };
 
+  // The selected exam's colour, read by the slider, inputs and buttons.
+  const accentStyle = { "--accent": meta.color, "--accent-ink": meta.ink } as CSSProperties;
+
   return (
-    <div className="relative mx-auto min-h-screen max-w-7xl px-4 py-10 sm:px-8">
-      <BackgroundGrid color={meta.color} />
-      <AmbientShapes />
-      <FloatingOrb exam={exam} />
+    <MotionConfig reducedMotion="user">
+      <div className="mx-auto min-h-screen max-w-7xl px-4 py-10 sm:px-8" style={accentStyle}>
+        <header className="mb-10 flex flex-col items-center text-center">
+          <h1 className="text-4xl font-black tracking-tight text-white sm:text-6xl">Syllabus Slicer</h1>
+          <p className="mt-3 max-w-xl text-sm text-gray-400 sm:text-base">
+            Turn the days and hours you have left into a week-by-week study plan for JEE Main, KCET or
+            NCERT boards.
+          </p>
 
-      <header className="relative mb-10 flex flex-col items-center text-center">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass mb-3 flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-gray-400"
-        >
-          <ScanLine className="h-3.5 w-3.5" style={{ color: meta.color }} />
-          Command Center Online
-        </motion.div>
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="text-4xl font-black tracking-tight text-white sm:text-6xl"
-        >
-          Syllabus <span style={{ color: meta.color }}>Slicer</span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mt-3 max-w-xl text-sm text-gray-400 sm:text-base"
-        >
-          Slice your prep into a weightage-driven battle plan for JEE Main, KCET, or NCERT boards.
-        </motion.p>
+          <div className="mt-8 w-full max-w-md">
+            <ExamSelector value={exam} onChange={handleExamChange} />
+          </div>
+        </header>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="mt-8 w-full max-w-md"
-        >
-          <ExamSelector value={exam} onChange={handleExamChange} />
-        </motion.div>
-      </header>
-
-      <main className="relative grid grid-cols-1 gap-8 lg:grid-cols-[380px_1fr]">
-        <motion.div
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <SlicerForm
-            exam={exam}
+        <main className="grid grid-cols-1 gap-8 lg:grid-cols-[380px_1fr]">
+          <div className="lg:self-start">
+            <SlicerForm
+              exam={exam}
             totalDays={totalDays}
-            setTotalDays={setTotalDays}
-            hoursPerDay={hoursPerDay}
-            setHoursPerDay={setHoursPerDay}
-            subjects={subjects}
-            setSubjects={setSubjects}
-            onSlice={handleSlice}
-            includedChapterCount={includedChapterCount}
-            totalChapterCount={relevantChapters.length}
-            onConfigureChapters={() => setConfiguratorOpen(true)}
-          />
-        </motion.div>
+              setTotalDays={setTotalDays}
+              hoursPerDay={hoursPerDay}
+              setHoursPerDay={setHoursPerDay}
+              subjects={subjects}
+              setSubjects={setSubjects}
+              onSlice={handleSlice}
+              includedChapterCount={includedChapterCount}
+              totalChapterCount={relevantChapters.length}
+              onConfigureChapters={() => setConfiguratorOpen(true)}
+            />
+          </div>
 
-        <div>
-          {result ? (
-            <motion.div
-              key="result"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-            >
-              <OutputDashboard result={result} />
-            </motion.div>
-          ) : (
-            <TiltCard
-              key="empty"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              maxTilt={5}
-              className="glass glow-border flex h-full min-h-[400px] flex-col items-center justify-center rounded-2xl p-10 text-center"
-            >
-              <div
-                className="animate-float mb-4 flex h-16 w-16 items-center justify-center rounded-2xl"
-                style={{ background: `${meta.color}22`, boxShadow: `0 0 30px ${meta.color}44` }}
-              >
-                <ScanLine className="h-7 w-7" style={{ color: meta.color }} />
+          <div>
+            {result ? (
+              <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <OutputDashboard result={result} />
+              </motion.div>
+            ) : (
+              <div className="panel flex h-full min-h-[400px] items-center justify-center rounded-2xl p-10 text-center">
+                <p className="max-w-sm text-gray-400">
+                  Set your days and hours, then press Slice my syllabus.
+                </p>
               </div>
-              <p className="text-lg font-semibold text-gray-300">
-                Configure your parameters and slice your syllabus
-              </p>
-              <p className="mt-1 max-w-sm text-sm text-gray-500">
-                Pick your exam, set your days and hours, then hit Slice to generate your
-                weightage-driven study plan.
-              </p>
-            </TiltCard>
-          )}
-        </div>
-      </main>
+            )}
+          </div>
+        </main>
 
-      {configuratorOpen && (
-        <ChapterConfigurator
-          exam={exam}
-          overrides={overrides}
-          onChange={setOverrides}
-          onClose={() => setConfiguratorOpen(false)}
-        />
-      )}
-    </div>
-  );
-}
-
-function BackgroundGrid({ color }: { color: string }) {
-  return (
-    <div
-      className="pointer-events-none fixed inset-0 -z-10 opacity-[0.07]"
-      style={{
-        backgroundImage: `linear-gradient(${color} 1px, transparent 1px), linear-gradient(90deg, ${color} 1px, transparent 1px)`,
-        backgroundSize: "48px 48px",
-      }}
-    />
+        {configuratorOpen && (
+          <ChapterConfigurator
+            exam={exam}
+            overrides={overrides}
+            onChange={setOverrides}
+            onClose={() => setConfiguratorOpen(false)}
+          />
+        )}
+      </div>
+    </MotionConfig>
   );
 }
